@@ -78,7 +78,7 @@ graph TB
 
 
 
-## Implementation note
+## Implementation Note
 
 This repository documents the system architecture and design 
 decisions behind this build. Workflow configurations, AI prompt 
@@ -89,13 +89,11 @@ If you are looking to build something similar or want to discuss
 the architecture in more detail, feel free to reach out.
 
 
-## workflow overview
-Workflow 1 acts as the initial gatekeeper, running immediately when a new application is submitted. It performs crucial validation checks to identify *duplicate submissions* and verify if the requested role is still marked as actively open in the database. If the application fails either check, the candidate receives an automated notification and the process halts; if successful, the system generates a unique reference number, logs the record, sends a confirmation email, and triggers the AI evaluation phase. This ensures the system remains clean, prevents duplicate spam, and guarantees HR is not clogged with redundant applications for closed roles.
-
-Workflow 2 handles the heavy lifting of initial CV evaluation by fetching the specific job description, required skills, and department scoring weights directly from the central database. It evaluates these metrics against the candidate's CV using artificial intelligence, returning a comprehensive assessment that includes a base score, identified skills, and potential red flags. Importantly, this workflow implements hard disqualifier checks—such as instantly rejecting a finance candidate lacking mandatory industry certifications—to definitively filter out legally or technically unqualified candidates before any human review occurs.
-
-Workflow 3 runs only when an applicant includes a GitHub URL in their application. It extracts the username, calls the GitHub REST API to retrieve all public repositories sorted by recency, and fetches the README for each — up to thirty repositories per scan. The compiled repository data is sent to Gemini alongside the role's requirements. The key output beyond a relevance score is what I called a hidden gem flag: a signal that the system found a repository directly relevant to the role that the applicant never mentioned in their CV or application. This addresses a real pattern where capable candidates undersell their own work.
-
-Workflow 4 is the intelligent decision engine that routes candidates based on their final computed score. It categorizes applicants into three distinct paths: top scorers are automatically shortlisted with an assessment summary sent to the talent acquisition team; mid-range scorers are emailed a dynamically selected, department-specific technical assessment; and low scorers receive a warm rejection email. The workflow also seamlessly transitions rejected candidates who opt-in into a dedicated talent pool, completely automating the traditional manual triage process and ensuring immediate, appropriate next steps for every single applicant.
-
-Workflow 5 manages the asynchronous assessment phase and eliminates the need for manual follow-ups by operating on two distinct tracks. The first track listens for assessment submissions, matches them back to the candidate's original record, and uses artificial intelligence to grade the technical answers before recalculating a final, weighted candidate score. The second track operates as a daily automated audit of pending assessments, sending friendly nudge emails to candidates approaching their deadline and archiving those who fail to respond. This design ensures that the evaluation pipeline keeps moving automatically and completely removes the cognitive load of chasing candidates from the HR team.
+## Workflow Overview
+| Workflow | Workflow Description |
+|---|---|
+| 1. Application Submission | The first step is about keeping the database clean. When an application comes in, the system immediately checks if it is a duplicate or if the role is still open. If either fails, it stops right there and emails the candidate. Otherwise, it logs the applicant, generates a reference ID, and kicks off the evaluation. This saves HR from digging through hundreds of dead-end applications. |
+| 2. AI Scoring | This is where the actual filtering happens. The system pulls the job description and scoring weights, then runs the candidate's CV against them. It returns a base score and flags any missing skills. The most important part here is the hard disqualifiers. If someone applies for a senior finance role without an ICAN certification, they are instantly rejected. It keeps unqualified candidates out of the pipeline completely. |
+| 3. GitHub Scanner | Workflow 3 runs only when an applicant includes a GitHub URL in their application. It extracts the username, calls the GitHub REST API to retrieve all public repositories sorted by recency, and fetches the README for each, *(up to thirty repositories per scan)*. The compiled repository data is sent to Gemini alongside the role's requirements. The key output beyond a relevance score is what I called a ***hidden gem flag***: a signal that the system found a repository directly relevant to the role that the applicant never mentioned in their CV or application. This addresses a real pattern where capable candidates undersell their own work. |
+| 4. Routing | Once we have a final score, this workflow decides what to do next. Anyone scoring over **75** gets shortlisted, and the talent team is notified on Slack. Mid-range scores (45 to 74) trigger an email with a department-specific technical test. Under 45 is an automatic rejection. A webhook is also included so rejected candidates can opt into a talent pool. It automates the triage phase. |
+| 5. Assessment Follow-Up | Following up with people is usually the worst part of HR, <ins>so this handles it asynchronously</ins>. One track listens for completed assessments, grades them, and recalculates the applicant's final score. The second track runs every morning at 8 AM. It checks who hasn't submitted their test, nudges them on day five, and archives them by day eight. Nobody falls through the cracks, and HR doesn't have to remember to chase anyone down. |
