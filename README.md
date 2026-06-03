@@ -1,5 +1,10 @@
 <img width="9180" height="1760" alt="Untitled-2026-06-03-151" src="https://github.com/user-attachments/assets/d8acd3e4-4019-4f8c-9295-cf16fea218a4" />
 
+# Zero-Cost Automated Hiring Pipeline
+An event-driven recruitment system that filters, scores, and auto-follows up with 400+ monthly applicants without HR lifting a finger.
+
+## The Problem It Solves
+A Lagos-based company was completely drowning in applications, receiving over 400 every month with zero automated filtering in place. HR spent hours manually reading resumes that were wildly irrelevant to the roles they were trying to fill. The actual qualified candidates were getting buried in the pile, and by the time someone finally reviewed their CV, they had already accepted offers elsewhere.
 
 ```mermaid
 graph TB
@@ -101,3 +106,17 @@ the architecture in more detail, feel free to reach out.
 | 3. GitHub Scanner | Workflow 3 runs only when an applicant includes a GitHub URL in their application. It extracts the username, calls the GitHub REST API to retrieve all public repositories sorted by recency, and fetches the README for each, *(up to thirty repositories per scan)*. The compiled repository data is sent to Gemini alongside the role's requirements. The key output beyond a relevance score is what I called a ***hidden gem flag***: a signal that the system found a repository directly relevant to the role that the applicant never mentioned in their CV or application. This addresses a real pattern where capable candidates undersell their own work. |
 | 4. Routing | Once we have a final score, this workflow decides what to do next. Anyone scoring over **75** gets shortlisted, and the talent team is notified on Slack. Mid-range scores (45 to 74) trigger an email with a department-specific technical test. Under 45 is an automatic rejection. A webhook is also included so rejected candidates can opt into a talent pool. It automates the triage phase. |
 | 5. Assessment Follow-Up | Following up with people is usually the worst part of HR, <ins>so this handles it asynchronously</ins>. One track listens for completed assessments, grades them, and recalculates the applicant's final score. The second track runs every morning at 8 AM. It checks who hasn't submitted their test, nudges them on day five, and archives them by day eight. Nobody falls through the cracks, and The HR team never has to think about follow-ups again. |
+
+## Key Design Decisions
+* <ins>Bypassing the CV for engineers</ins>: Candidates are often terrible at writing resumes, but their code doesn't lie. I built a scanner that takes their GitHub URL, decodes their public READMEs, and hunts for relevant work they forgot to mention in their application. I call it the "hidden gem" flag.
+
+* <ins>Hard disqualifiers</ins>: LLMs are prone to hallucinating, especially around strict compliance requirements. I didn't want the AI accidentally passing a senior finance applicant who lacked an ICAN certification just because they wrote a persuasive cover letter. If they fail a mandatory check, the system rejects them instantly—the AI score doesn't matter.
+
+* <ins>Removing the "chase"</ins>: Following up with candidates is miserable work. I moved the entire assessment-chasing process to an asynchronous cron job. If a candidate drags their feet, the system nudges them on day five and quietly archives them on day eight. The HR team never has to think about it.
+
+## Results & Outcomes
+- Zero manual screening: HR now only looks at a clean, pre-qualified pipeline of candidates who have already passed both the initial AI screen and the technical assessment.
+
+- Zero ongoing platform costs: The entire architecture runs on free-tier platforms and usage-based API calls, costing pennies to run rather than paying for expensive monthly recruiting SaaS seats.
+
+- No lost talent: Every single applicant gets an immediate response, an assessment link, or a warm rejection. The talent pool stays organized, and the good candidates don't get bored waiting weeks for an email.
