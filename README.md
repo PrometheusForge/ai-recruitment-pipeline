@@ -64,6 +64,7 @@ graph TB
     style Output fill:#1a0a0a,stroke:#8b2d2d,color:#ffffff
 ```
 
+```mermaid
 graph TB
     subgraph Forms["Application Layer — Tally Forms"]
         AF[Job Application Form]
@@ -148,6 +149,7 @@ graph TB
     style Data fill:#0a1628,stroke:#1e6091,color:#ffffff
     style GitHub fill:#0d1117,stroke:#656d76,color:#ffffff
     style Output fill:#1a0a0a,stroke:#8b2d2d,color:#ffffff
+```
 
 ## Tech Stack
 
