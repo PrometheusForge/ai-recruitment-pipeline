@@ -15,7 +15,7 @@ graph TB
     end
 
     subgraph AI["AI Layer"]
-        GM[Google Gemini 1.5 Flash]
+        GM[Google Gemini 2.5 Flash]
     end
 
     subgraph Data["Data Layer — Airtable"]
@@ -75,3 +75,15 @@ graph TB
 | Profile scanning | GitHub REST API | Public repository and README analysis |
 | Notifications | Gmail + Slack | Candidate emails + HR alerts |
 | Cost | All free tiers | Zero monthly operating cost |
+
+
+
+## Implementation note
+
+This repository documents the system architecture and design 
+decisions behind this build. Workflow configurations, AI prompt 
+engineering, scoring logic, and integration specifics are not 
+included in this public repository.
+
+If you are looking to build something similar or want to discuss 
+the architecture in more detail, feel free to reach out.
