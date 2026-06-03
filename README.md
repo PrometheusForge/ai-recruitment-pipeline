@@ -63,3 +63,15 @@ graph TB
     style GitHub fill:#0d1117,stroke:#656d76,color:#ffffff
     style Output fill:#1a0a0a,stroke:#8b2d2d,color:#ffffff
 ```
+
+## Tech Stack
+
+| Layer | Tool | Purpose |
+|---|---|---|
+| Workflow automation | n8n (cloud) | All five workflow chains |
+| AI / LLM | Google Gemini 2.5 Flash | CV scoring, GitHub relevance analysis, assessment scoring |
+| Database | Airtable | Jobs, candidates, talent pool |
+| Forms | Tally | Application, assessments, opt-in |
+| Profile scanning | GitHub REST API | Public repository and README analysis |
+| Notifications | Gmail + Slack | Candidate emails + HR alerts |
+| Cost | All free tiers | Zero monthly operating cost |
