@@ -1,3 +1,6 @@
+<img width="9180" height="1760" alt="Untitled-2026-06-03-151" src="https://github.com/user-attachments/assets/d8acd3e4-4019-4f8c-9295-cf16fea218a4" />
+
+
 ```mermaid
 graph TB
     subgraph Forms["Application Layer — Tally Forms"]
